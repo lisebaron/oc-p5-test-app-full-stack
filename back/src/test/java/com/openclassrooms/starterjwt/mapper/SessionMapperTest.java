@@ -10,7 +10,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -21,8 +23,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 // TODO Fix le SessionMapping
-@ExtendWith(MockitoExtension.class)
-@SpringBootTest(classes = SpringBootSecurityJwtApplication.class)
+
 class SessionMapperTest {
 
     @Mock
@@ -31,11 +32,12 @@ class SessionMapperTest {
     @Mock
     private UserService userService;
 
-    private SessionMapper sessionMapper;
-
+    @InjectMocks
+    private SessionMapper sessionMapper = Mappers.getMapper(SessionMapper.class);
     @BeforeEach
-    void setUp() {
-        sessionMapper = Mappers.getMapper(SessionMapper.class);
+    public void setUp() {
+        //https://www.arhohuttunen.com/junit-5-mockito/
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
