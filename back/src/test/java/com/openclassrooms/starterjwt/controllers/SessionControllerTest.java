@@ -4,34 +4,24 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.openclassrooms.starterjwt.dto.SessionDto;
 import com.openclassrooms.starterjwt.mapper.SessionMapper;
 import com.openclassrooms.starterjwt.models.Session;
-import com.openclassrooms.starterjwt.security.services.UserDetailsServiceImpl;
+import com.openclassrooms.starterjwt.models.Teacher;
+import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.services.SessionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,17 +50,14 @@ class SessionControllerTest {
 
     @Test
     void findById_shouldReturnSession_Success() throws Exception {
-        //Arrange
         Session session = new Session();
         SessionDto sessionDto = new SessionDto();
 
         when(sessionService.getById(anyLong())).thenReturn(session);
         when(sessionMapper.toDto(session)).thenReturn(sessionDto);
 
-        //Act
         final var result = mockMvc.perform(get("/api/session/1"));
 
-        //Assert
         result.andExpect(status().isOk());
         result.andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
         result.andExpect(jsonPath("$").exists());
@@ -78,19 +65,17 @@ class SessionControllerTest {
 
     @Test
     void findById_shouldReturnNotFound() throws Exception {
-        //Arrange
         when(sessionService.getById(anyLong())).thenReturn(null);
-        //Act
+
         final var result = mockMvc.perform(get("/api/session/1"));
-        //Assert
+
         result.andExpect(status().isNotFound());
     }
 
     @Test
     void findById_shouldReturnBadRequest() throws Exception {
-        //Act
         final var result = mockMvc.perform(get("/api/session/InvalidId"));
-        //Assert
+
         result.andExpect(status().isBadRequest());
     }
 
@@ -113,22 +98,141 @@ class SessionControllerTest {
 
     @Test
     void create_shouldCreateSession_success() throws Exception {
-        //Arrange
         SessionDto sessionDto = new SessionDto();
+        sessionDto.setId(2L);
+        sessionDto.setName("Session 2");
+        sessionDto.setDescription("Description of Session 2");
+        sessionDto.setDate(new Date(2024, 7, 7));
+        sessionDto.setTeacher_id(2L);
+        sessionDto.setUsers(List.of(2L));
+
+        Teacher teacher = new Teacher();
+        teacher.setId(9L);
+
+        User user = new User();
+        user.setId(2L);
+
         Session session = new Session();
+        session.setId(2L);
+        session.setName("Session 2");
+        session.setDate(new Date(2024,7,7));
+        session.setDescription("Description of Session 2");
+        session.setTeacher(teacher);
+        session.setUsers(List.of(user));
 
         when(sessionService.create(session)).thenReturn(session);
         when(sessionMapper.toEntity(sessionDto)).thenReturn(session);
         when(sessionMapper.toDto(session)).thenReturn(sessionDto);
 
-        //Act
         final var result = mockMvc.perform(post("/api/session")
                 .content(mapper.writeValueAsString(sessionDto))
                 .contentType(MediaType.APPLICATION_JSON_VALUE));
 
-        //Assert
         result.andExpect(status().isOk());
         result.andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
         result.andExpect(jsonPath("$").exists());
+    }
+
+    @Test
+    void update_shouldUpdateSession() throws Exception {
+        final var id = 1L;
+
+        SessionDto sessionDto = new SessionDto();
+        sessionDto.setId(id);
+        sessionDto.setName("Session 1");
+        sessionDto.setDescription("Description of Session 1");
+        sessionDto.setDate(new Date(2024, 7, 7));
+        sessionDto.setTeacher_id(2L);
+        sessionDto.setUsers(List.of(2L));
+
+        Teacher teacher = new Teacher();
+        teacher.setId(9L);
+
+        User user = new User();
+        user.setId(2L);
+
+        Session session = new Session();
+        session.setId(id);
+        session.setName("Session 1");
+        session.setDate(new Date(2024,7,7));
+        session.setDescription("Description of Session 1");
+        session.setTeacher(teacher);
+        session.setUsers(List.of(user));
+
+        when(sessionMapper.toEntity(sessionDto)).thenReturn(session);
+        when(sessionService.update(id, session)).thenReturn(session);
+        when(sessionMapper.toDto(session)).thenReturn(sessionDto);
+
+        final var result = mockMvc.perform(put("/api/session/" + id)
+                .content(mapper.writeValueAsString(sessionDto))
+                .contentType(MediaType.APPLICATION_JSON_VALUE));
+
+        result.andExpect(status().isOk());
+        result.andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+        result.andExpect(jsonPath("$").exists());
+    }
+
+    @Test
+    void save_shouldDeleteSession() throws Exception {
+        final var id = 1L;
+        Session session = new Session();
+        when(sessionService.getById(id)).thenReturn(session);
+
+        final var result = mockMvc.perform(delete("/api/session/" + id));
+
+        result.andExpect(status().isOk());
+    }
+
+    @Test
+    void save_shouldReturnNotFound() throws Exception {
+        final var id = 1L;
+        Session session = new Session();
+        when(sessionService.getById(id)).thenReturn(null);
+
+        final var result = mockMvc.perform(delete("/api/session/" + id));
+
+        result.andExpect(status().isNotFound());
+    }
+
+    @Test
+    void save_shouldReturnBadRequest() throws Exception {
+        final var result = mockMvc.perform(delete("/api/session/invalidId"));
+        result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void participate_shouldAddParticipant() throws Exception {
+        final var result = mockMvc.perform(post("/api/session/2/participate/1"));
+        result.andExpect(status().isOk());
+    }
+
+    @Test
+    void participate_shouldReturnBadRequest_whenUserIdIsInvalid() throws Exception {
+        final var result = mockMvc.perform(post("/api/session/2/participate/invalidId"));
+        result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void participate_shouldReturnBadRequest_whenIdIsInvalid() throws Exception {
+        final var result = mockMvc.perform(post("/api/session/invalidId/participate/1"));
+        result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void noLongerParticipate_shouldRemoveParticipant() throws Exception {
+        final var result = mockMvc.perform(delete("/api/session/2/participate/1"));
+        result.andExpect(status().isOk());
+    }
+
+    @Test
+    void noLongerParticipate_shouldRemoveParticipant_whenUserIdIsInvalid() throws Exception {
+        final var result = mockMvc.perform(delete("/api/session/2/participate/invalidId"));
+        result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void noLongerParticipate_shouldRemoveParticipant_whenIdIsInvalid() throws Exception {
+        final var result = mockMvc.perform(delete("/api/session/invalidId/participate/1"));
+        result.andExpect(status().isBadRequest());
     }
 }

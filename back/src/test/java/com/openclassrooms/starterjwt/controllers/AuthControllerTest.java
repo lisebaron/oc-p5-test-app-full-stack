@@ -1,6 +1,5 @@
 package com.openclassrooms.starterjwt.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.payload.request.LoginRequest;
@@ -68,7 +67,6 @@ class AuthControllerTest {
 
     @Test
     void authenticateUser_shouldAuthenticateUser_success() throws Exception {
-        //Arrange
         final var loginRequest = new LoginRequest();
         loginRequest.setEmail("john.doe@test.com");
         loginRequest.setPassword("password");
@@ -84,12 +82,10 @@ class AuthControllerTest {
         when(userRepository.findByEmail(eq("john.doe@test.com"))).thenReturn(Optional.of(user));
         when(user.isAdmin()).thenReturn(Boolean.FALSE);
 
-        //Act
         final var result = mockMvc.perform(post("/api/auth/login")
                 .content(mapper.writeValueAsBytes(loginRequest))
                 .contentType(MediaType.APPLICATION_JSON_VALUE));
 
-        //Assert
         result.andExpect(status().isOk());
         result.andExpect(jsonPath("$.token").value("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9"));
         result.andExpect(jsonPath("$.id").value("1"));
@@ -101,7 +97,6 @@ class AuthControllerTest {
 
     @Test
     void registerUser_shouldRegisterUser_success() throws Exception {
-        //Arrange
         final var registerRequest = new SignupRequest();
         registerRequest.setEmail("john.doe@test.com");
         registerRequest.setFirstName("John");
@@ -110,12 +105,10 @@ class AuthControllerTest {
 
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
 
-        //Act
         final var result = mockMvc.perform(post("/api/auth/register")
-                .content(mapper.writeValueAsString(registerRequest)) // body
-                .contentType(MediaType.APPLICATION_JSON_VALUE)); //type du contenu de la requête est du JSON
+                .content(mapper.writeValueAsString(registerRequest))
+                .contentType(MediaType.APPLICATION_JSON_VALUE));
 
-        //Assert
         result.andExpect(status().isOk());
         result.andExpect(content().contentType(MediaType.APPLICATION_JSON));
         result.andExpect(jsonPath("$.message").value("User registered successfully!"));
@@ -137,6 +130,5 @@ class AuthControllerTest {
 
         result.andExpect(status().isBadRequest());
         result.andExpect(jsonPath("$.message").value("Error: Email is already taken!"));
-
     }
 }
