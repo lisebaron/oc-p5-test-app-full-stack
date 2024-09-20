@@ -105,7 +105,7 @@ describe('When user is admin', () => {
         cy.intercept({ method: 'GET', url: 'api/teacher/2' }, teacher ).as('TeacherDetails');
         
         // Navigate to Session detail
-        cy.get('[ng-reflect-router-link="detail,1"]').click();
+        cy.get(':nth-child(1) > .mat-card-actions > :nth-child(1)').click();
         cy.wait('@SessionOneDetails');
         cy.wait('@TeacherDetails');
 
@@ -120,7 +120,7 @@ describe('When user is admin', () => {
         }).as('DeleteSession');
 
         // Navigate to Session detail
-        cy.get('[ng-reflect-router-link="detail,1"]').click();
+        cy.get(':nth-child(1) > .mat-card-actions > :nth-child(1)').click();
         cy.wait('@SessionOneDetails');
         cy.wait('@TeacherDetails');
 

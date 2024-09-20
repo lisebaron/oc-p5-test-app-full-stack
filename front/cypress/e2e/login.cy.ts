@@ -61,7 +61,7 @@ describe('Login spec', () => {
     cy.wait('@LoginRequest');
 
     cy.contains('span', 'Logout').click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/`);
+    cy.url().should('eq', `${Cypress.config().baseUrl}`);
   });
 
   const testCases = [
