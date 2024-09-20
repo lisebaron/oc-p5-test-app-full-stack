@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -21,7 +21,7 @@ class TeacherServiceTest {
     @Mock
     private TeacherRepository teacherRepository;
 
-    private TeacherService teacherService; // service under test
+    private TeacherService teacherService;
 
     @BeforeEach
     void setUp() {

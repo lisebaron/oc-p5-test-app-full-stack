@@ -10,7 +10,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -20,7 +19,7 @@ class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    private UserService userService; // service under test
+    private UserService userService;
 
     @BeforeEach
     void setUp() {
